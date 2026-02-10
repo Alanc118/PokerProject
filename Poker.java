@@ -25,6 +25,7 @@ public class Poker {
         }
         return 0;
     }
+
     public int[] fiveCard(int[] hand) {
         int[] cardAmount = new int[13];
 
@@ -44,13 +45,35 @@ public class Poker {
             if (count == 2) pairs++;
         }
 
-        if (five) fiveKind++;
-        else if (four) fourKind++;
-        else if (three && pairs == 1) fullHouse++;
-        else if (three) threeKind++;
-        else if (pairs == 2) twoPair++;
-        else if (pairs == 1) onePair++;
-        else highCard++;
+        if (five)
+        {
+            fiveKind++;
+        }
+        else if (four)
+        {
+            fourKind++;
+        }
+        else if (three && pairs == 1) {
+            fullHouse++;
+        }
+        else if (three)
+                {
+                    threeKind++;
+        }
+        else if (pairs == 2)
+        {
+                    twoPair++;
+        }
+        else if (pairs == 1)
+        {
+            onePair++;
+        }
+
+
+        else
+        {
+            highCard++;
+        }
         return cardAmount;
     }
 
