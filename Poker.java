@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Poker {
+    File f = new File("src/data");
     private int fiveKind = 0;
     private int fourKind = 0;
     private int fullHouse = 0;
@@ -11,11 +12,12 @@ public class Poker {
     private int twoPair = 0;
     private int onePair = 0;
     private int highCard = 0;
+    private int[] hand = new int[5];
+    private int rank = 79;
     private final String[] cards = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"
     };
-
     public Poker() {
-
+        System.out.println(Arrays.toString(this.hand));
     }
     public int cardValue(String card) {
         for (int i = 0; i < cards.length; i++) {
@@ -26,8 +28,9 @@ public class Poker {
         return 0;
     }
 
-    public int[] fiveCard(int[] hand) {
+    public int[] cardHands(int[] hand) {
         int[] cardAmount = new int[13];
+        int[] rank = new int[hand.length];
 
         for (int card : hand) {
             cardAmount[card]++;
@@ -44,35 +47,30 @@ public class Poker {
             if (count == 3) three = true;
             if (count == 2) pairs++;
         }
-
-        if (five)
-        {
-            fiveKind++;
-        }
-        else if (four)
-        {
-            fourKind++;
-        }
-        else if (three && pairs == 1) {
-            fullHouse++;
-        }
-        else if (three)
-                {
-                    threeKind++;
-        }
-        else if (pairs == 2)
-        {
-                    twoPair++;
-        }
-        else if (pairs == 1)
-        {
-            onePair++;
-        }
-
-
-        else
-        {
-            highCard++;
+        for (int i = 0; i >= hand.length; i++) {
+            if (five) {
+                fiveKind++;
+                rank[i]++;
+            } else if (four) {
+                fourKind++;
+                rank[i]++;
+            } else if (three && pairs == 1) {
+                fullHouse++;
+                rank[i]++;
+            } else if (three) {
+                threeKind++;
+                rank[i]++;
+            } else if (pairs == 2) {
+                twoPair++;
+                rank[i]++;
+            } else if (pairs == 1) {
+                onePair++;
+                rank[i]++;
+            } else {
+                highCard++;
+                rank[i]++;
+            }
+            return rank;
         }
         return cardAmount;
     }
@@ -85,5 +83,16 @@ public class Poker {
         System.out.println("Number of two pair hands: " + twoPair);
         System.out.println("Number of one pair hands: " + onePair);
         System.out.println("Number of high card hands: " + highCard);
+    }
+
+    public void ranking (int[] hand)
+    {
+        for (int i = 0; i < hand.length; i++)
+        {
+            if (fiveKind >= 5)
+            {
+
+            }
+        }
     }
 }

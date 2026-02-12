@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         Poker hand = new Poker();
         String fileData = "";
-
+        
         try {
             File f = new File("src/data");
             Scanner s = new Scanner(f);
@@ -20,7 +20,6 @@ public class Main {
             System.out.println("File not found");
         }
 
-        System.out.println(fileData);
         String[] lines = fileData.split("\n");
 
         for (String line : lines) {
@@ -28,13 +27,15 @@ public class Main {
                 String[] parts = line.split("\\|");
                 String[] cards = parts[0].split(",");
 
+                System.out.println(Arrays.toString(cards));
+
                 int[] value = new int[5];
 
                 for (int i = 0; i < 5; i++) {
                     value[i] = hand.cardValue(cards[i].replace(" ", ""));
                 }
-
-                hand.fiveCard(value);
+                hand.cardHands(value);
+                hand.ranking(value);
             }
         }
         hand.printResults();
