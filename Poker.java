@@ -1,7 +1,5 @@
 import java.util.Arrays;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 public class Poker {
     File f = new File("src/data");
@@ -15,8 +13,7 @@ public class Poker {
     private int numberOfHands = 0;
     private int[] hand = new int[5];
     private int totalBet = 0;
-    private final String[] cards = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"
-    };
+    private final String[] cards = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
 
     public Poker() {
         System.out.println(Arrays.toString(this.hand));
@@ -70,7 +67,6 @@ public class Poker {
         int[] values = new int[5];
         int index = 0;
 
-        int comboCount = 0;
         String combo = getPokerCombo(hand);
         int targetCount = switch (combo) {
             case "fiveOfAKind" -> 5;
@@ -81,7 +77,6 @@ public class Poker {
             case "onePair" -> 2;
             default -> 1;
         };
-
         for (int i = 12; i >= 0; i--) {
             if (cardAmounts[i] == targetCount) {
                 for (int j = 0; j < cardAmounts[i]; j++) {
@@ -89,21 +84,26 @@ public class Poker {
                 }
             }
         }
-
-        // 2️⃣ Add remaining kicker cards
-        for (int i = 12; i >= 0; i--) {
-            if (cardAmounts[i] > 0 && index < 5) {
-                int count = cardAmounts[i];
-                for (int j = 0; j < count && index < 5; j++) {
-                    if (values[index - 1] != i) values[index++] = i;
+        if (combo.equals("fullHouse")) {
+            for (int i = 12; i >= 0; i--) {
+                if (cardAmounts[i] == 2) {
+                    for (int j = 0; j < cardAmounts[i]; j++) {
+                        values[index++] = i;
+                    }
+                }
+            }
+        }
+        for (int i = 12; i >= 0 && index < 5; i--) {
+            if (cardAmounts[i] > 0 && cardAmounts[i] != targetCount &&
+                    !(combo.equals("fullHouse") && cardAmounts[i] == 2)) {
+                for (int j = 0; j < cardAmounts[i] && index < 5; j++) {
+                    values[index++] = i;
                 }
             }
         }
 
         return values;
     }
-
-
 
     public int[] cardHands(int[] hand) {
         int[] cardAmount = new int[13];
@@ -119,47 +119,41 @@ public class Poker {
         numberOfHands = fiveKind + fourKind + fullHouse + threeKind + twoPair + onePair + highCard;
         return cardAmount;
     }
-
-
-    public int rankHand(int[] hand, int[][] allHands) {
+    public int rankHand(int handIndex, int[][] allHands) {
+        int[] hand = allHands[handIndex];
         int[] currentValues = getHighestValuesInCombo(hand);
         int strength = getComboStrength(getPokerCombo(hand));
 
         int rank = 1;
         for (int i = 0; i < allHands.length; i++) {
-            if (allHands[i] == hand) continue;
-
+            if (i == handIndex) continue;
             int otherStrength = getComboStrength(getPokerCombo(allHands[i]));
             int[] otherValues = getHighestValuesInCombo(allHands[i]);
-
-            if (otherStrength > strength) {
+            if (otherStrength < strength) {
                 rank++;
             } else if (otherStrength == strength) {
                 for (int j = 0; j < 5; j++) {
-                    if (otherValues[j] > currentValues[j]) {
+                    if (otherValues[j] < currentValues[j]) {
                         rank++;
                         break;
-                    } else if (otherValues[j] < currentValues[j]) {
+                    } else if (otherValues[j] > currentValues[j]) {
                         break;
                     }
                 }
             }
         }
+
         return rank;
     }
-
 
     public int calculateTotalBid(int[][] allHands, int[] bids) {
         int total = 0;
         for (int i = 0; i < allHands.length; i++) {
-            int rank = rankHand(allHands[i], allHands);
+            int rank = rankHand(i, allHands);
             total += rank * bids[i];
         }
         return total;
     }
-
-
-
 
     private int getComboStrength(String combo) {
         return switch (combo) {
@@ -169,16 +163,18 @@ public class Poker {
             case "threeOfAKind" -> 3;
             case "twoPair" -> 2;
             case "onePair" -> 1;
-            default -> 0;
+            default -> 0;  // highCard
         };
     }
 
     public int getTotalBet() {
         return this.totalBet;
     }
+
     public void printTotalBet() {
         System.out.println(totalBet);
     }
+
     public void printResults() {
         System.out.println("Number of five of a kind hands: " + fiveKind);
         System.out.println("Number of full house hands: " + fullHouse);
